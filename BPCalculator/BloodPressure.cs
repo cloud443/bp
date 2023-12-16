@@ -28,25 +28,7 @@ namespace BPCalculator
 
         // calculate BP category
         public BPCategory Category
-{
-    get
-    {
-        // According to the chart provided
-        if (Systolic >= 140 || Diastolic >= 90)
         {
-            return BPCategory.High;
-        }
-        else if (Systolic >= 120 || Diastolic >= 80)
-        {
-            return BPCategory.PreHigh;
-        }
-        else if (Systolic >= 90 || Diastolic >= 60)
-        {
-            return BPCategory.Ideal;
-        }
-        else
-        {
-
             get
             {
                 // According to the chart provided
@@ -65,9 +47,8 @@ namespace BPCalculator
                 else
                 {
                     return BPCategory.Low;
-                }                      // replace this
+                }                      
             }
-
         }
     }
 }
