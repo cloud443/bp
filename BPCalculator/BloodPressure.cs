@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
@@ -28,13 +28,25 @@ namespace BPCalculator
 
         // calculate BP category
         public BPCategory Category
+{
+    get
+    {
+        // According to the chart provided
+        if (Systolic >= 140 || Diastolic >= 90)
         {
-            get
-            {
-                // implement as part of project
-                //throw new NotImplementedException("not implemented yet");
-                return new BPCategory();                       // replace this
-            }
+            return BPCategory.High;
+        }
+        else if (Systolic >= 120 || Diastolic >= 80)
+        {
+            return BPCategory.PreHigh;
+        }
+        else if (Systolic >= 90 || Diastolic >= 60)
+        {
+            return BPCategory.Ideal;
+        }
+        else
+        {
+            return BPCategory.Low;
         }
     }
 }
