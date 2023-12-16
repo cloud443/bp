@@ -38,4 +38,4 @@ jobs:
       run: |
         echo "$AWS_EC2_PEM" > private.pem && chmod 600 private.pem
         scp -o StrictHostKeyChecking=no -i private.pem app.zip $AWS_EC2_USERNAME@$AWS_EC2_PUBLIC_IP:/home/ubuntu
-        ssh -o StrictHostKeyChecking=no -i private.pem $AWS_EC2_USERNAME@$AWS_EC2_PUBLIC_IP "cd /home/ubuntu && unzip app.zip && dotnet out/BPCalculator.dll"
+        ssh -o StrictHostKeyChecking=no -i private.pem $AWS_EC2_USERNAME@$AWS_EC2_PUBLIC_IP "cd /home/ubuntu && unzip -o app.zip && dotnet out/BPCalculator.dll"
