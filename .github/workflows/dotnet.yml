@@ -7,7 +7,7 @@ on:
     branches: ["master"]
 
 jobs:
-  deploy:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,10 +15,9 @@ jobs:
     - name: Analyze with SonarCloud
       uses: SonarSource/sonarcloud-github-action@de2e56b42aa84d0b1c5b622644ac17e505c9a049
       env:
-         GITHUB_TOKEN: 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  # Needed to get PR information
-         SONAR_TOKEN: 45d499f462def75d4a2dcc1557501e2651b3f408   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
-          # Additional arguments for the sonarcloud scanner
           args:
             -Dsonar.projectKey=cloud443_bp
             -Dsonar.organization=cloud443
@@ -35,11 +34,16 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
 
-    - name: Publish
-      run: dotnet publish -c Release --output out
+  cd:
+    needs: ci  # Ensure that the CI job is completed before starting the CD job
+    runs-on: ubuntu-latest
 
-    - name: Zip Application
-      run: zip -r app.zip ./out
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
 
     - name: Deploy to Dev using SSH
       env:
