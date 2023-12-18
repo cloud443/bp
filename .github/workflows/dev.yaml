@@ -1,0 +1,65 @@
+name: .NET with SCP and Run
+
+on:
+  push:
+    branches: ["dev"]
+  pull_request:
+    branches: ["dev"]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Analyze with SonarCloud
+      uses: SonarSource/sonarcloud-github-action@de2e56b42aa84d0b1c5b622644ac17e505c9a049
+      env:
+         GITHUB_TOKEN: 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
+         SONAR_TOKEN: 45d499f462def75d4a2dcc1557501e2651b3f408
+      with:
+          args:
+            -Dsonar.projectKey=cloud443_bp
+            -Dsonar.organization=cloud443
+    - name: Run Snyk to check for vulnerabilities
+      uses: snyk/actions/dotnet@master
+      env:
+        SNYK_TOKEN: 621d3e49-c12c-4401-b823-fdf43cd2fb10
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+
+  cd:
+    needs: ci  # Ensure that the CI job is completed before starting the CD job
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Publish
+      run: dotnet publish -c Release --output out
+
+    - name: Zip Application
+      run: zip -r app.zip ./out
+
+    - name: Deploy to Dev using SSH
+      env:
+        AWS_EC2_PEM: ${{ secrets.AWS_EC2_DEV_PEM }}
+        AWS_EC2_PUBLIC_IP: ${{ secrets.AWS_EC2_DEV_PUBLIC_IP }}
+        AWS_EC2_USERNAME: ${{ secrets.AWS_EC2_DEV_USERNAME }}
+      run: |
+        echo "$AWS_EC2_PEM" > private.pem && chmod 600 private.pem
+        scp -o StrictHostKeyChecking=no -i private.pem app.zip $AWS_EC2_USERNAME@$AWS_EC2_PUBLIC_IP:/home/ubuntu
+        ssh -o StrictHostKeyChecking=no -i private.pem $AWS_EC2_USERNAME@$AWS_EC2_PUBLIC_IP "cd /home/ubuntu && unzip -o app.zip && pm2 restart app"
