@@ -24,7 +24,7 @@ jobs:
     - name: Run Snyk to check for vulnerabilities
       uses: snyk/actions/dotnet@master
       env:
-        SNYK_TOKEN: 621d3e49-c12c-4401-b823-fdf43cd2fb10
+        SNYK_TOKEN: 703ec954-1ed3-4a82-a711-ee9e62e3268b
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
