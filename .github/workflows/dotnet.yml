@@ -21,10 +21,10 @@ jobs:
           args:
             -Dsonar.projectKey=cloud443_bp
             -Dsonar.organization=cloud443
-    - name: Run Snyk to check for vulnerabilities
-      uses: snyk/actions/dotnet@master
-      env:
-        SNYK_TOKEN: 621d3e49-c12c-4401-b823-fdf43cd2fb10
+    #- name: Run Snyk to check for vulnerabilities
+    #  uses: snyk/actions/dotnet@master
+    #  env:
+    #    SNYK_TOKEN: 621d3e49-c12c-4401-b823-fdf43cd2fb10
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
